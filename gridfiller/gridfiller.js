@@ -123,11 +123,9 @@ class gridfiller {
       for (let i = 0 ; i < 100; i ++) {
         let r =  Math.floor(random(0, this.no_rows))
         let c =  Math.floor(random(0, this.no_cols))
-        r = 2
-        c = 2
 
         let cell_a = this.cells[r][c];
-        for (let cell_c of this.cells_all) {
+        for (const cell_c of this.cells_all) {
           if (cell_a != cell_c) {
             if((cell_c.r == 3 ) && (cell_c.c == 1))
             {

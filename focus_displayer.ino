@@ -2,12 +2,14 @@
 #include <FastLED.h>
 
 
-#define PIN_SERVO 9
+#define PIN_SERVO_1 8
 #define PIN_LED0  7
 
-Servo myservo;
-// memory for the leds on the left (incomming) and right (outgoing) side.
-CRGB leds[2];
+#define NO_SERVOS (5)
+Servo myservos[NO_SERVOS];
+
+#define NO_LEDS (10)
+CRGB leds[NO_LEDS];
 
 /**
  * BROWN  = GROUND
@@ -48,8 +50,11 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Boot Started");
 
-  myservo.attach(PIN_SERVO);  
-  FastLED.addLeds<WS2812B, PIN_LED0, GRB >(leds, 2);
+  for (int s = 0; s < NO_SERVOS; s ++) {
+    myservos[s].attach(PIN_SERVO_1+s);  
+  }
+  
+  FastLED.addLeds<WS2812B, PIN_LED0, GRB >(leds, NO_LEDS);
 
 
 }
@@ -60,7 +65,9 @@ void loop() {
 
   loop_serial();
 
-  myservo.write(pos);              // tell servo to go to position in variable 'pos'
+  for (int s = 0; s < NO_SERVOS; s++) {
+    myservos[s].write(pos);              // tell servo to go to position in variable 'pos'
+  }
   delay(15);                       // waits 15ms for the servo to reach the position
 
   if (glb_zero_pause) {
@@ -80,16 +87,23 @@ void loop() {
 
   // -----------
   // LEDS
-  if (pos < 60) {
-    leds[0] = CRGB::Red;
-    leds[1] = CRGB::Green;
-  } else if (pos > 120) {
-    leds[0] = CRGB::Green;
-    leds[1] = CRGB::Blue;
-  } else {
-    leds[0] = CRGB::Blue;
-    leds[1] = CRGB::Red;
+//  static uint8_t hue = 0;
+//  leds[0] = CHSV(hue,255,255);
+//  leds[1] = CHSV(hue+127,255,255);
+//  hue ++;
+//  if (hue > 255) hue = 0;
+//  
+  for (int led = 0; led < NO_LEDS; led++) {
+    if (pos < 60) {
+      leds[led] = CRGB::Red;
+    } else if (pos > 120) {
+      leds[led] = CRGB::Green;
+    } else {
+      leds[led] = CRGB::Blue;
+    }
   }
+
+
 
   FastLED.show();
   
